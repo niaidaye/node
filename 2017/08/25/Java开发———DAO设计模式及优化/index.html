@@ -1,0 +1,866 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="">
+<head>
+
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+</style>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/node/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/node/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/node/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/node/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="什么是DAO？  DAO是Data Access Object 数据访问接口，顾名思义：就是与数据库打交道。夹在业务逻辑与数据资源的中间。  DAO模式有哪些？  DAO模式实际上是两个模式的组合 既Data Accessor 模式和Active Domain Object模式。  它们的意义和作用  Data Accessor模式实现了数据访问和业务逻辑的分离，Active Domain Obj">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java开发———DAO设计模式及优化">
+<meta property="og:url" content="https://niaidaye.github.io/node/2017/08/25/Java开发———DAO设计模式及优化/index.html">
+<meta property="og:site_name" content="林俊的博客">
+<meta property="og:description" content="什么是DAO？  DAO是Data Access Object 数据访问接口，顾名思义：就是与数据库打交道。夹在业务逻辑与数据资源的中间。  DAO模式有哪些？  DAO模式实际上是两个模式的组合 既Data Accessor 模式和Active Domain Object模式。  它们的意义和作用  Data Accessor模式实现了数据访问和业务逻辑的分离，Active Domain Obj">
+<meta property="og:updated_time" content="2017-08-31T04:27:26.575Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java开发———DAO设计模式及优化">
+<meta name="twitter:description" content="什么是DAO？  DAO是Data Access Object 数据访问接口，顾名思义：就是与数据库打交道。夹在业务逻辑与数据资源的中间。  DAO模式有哪些？  DAO模式实际上是两个模式的组合 既Data Accessor 模式和Active Domain Object模式。  它们的意义和作用  Data Accessor模式实现了数据访问和业务逻辑的分离，Active Domain Obj">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/node/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://niaidaye.github.io/node/2017/08/25/Java开发———DAO设计模式及优化/"/>
+
+
+
+
+
+  <title> Java开发———DAO设计模式及优化 | 林俊的博客 </title>
+  
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband">
+    <a href="https://github.com/you"><img style="position: absolute;
+     top: 0; left: 0; border: 0;"
+     src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67"
+     alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
+    </div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/node/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林俊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一次偶然的成功，比一次必然的失败更可怕</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/node/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-timeline">
+          <a href="/node/timeline" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            时间轴
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-java">
+          <a href="/node/java" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-coffee"></i> <br />
+            
+            java
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-javaweb">
+          <a href="/node/javaweb" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-users"></i> <br />
+            
+            javaweb
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-android">
+          <a href="/node/android" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-android"></i> <br />
+            
+            android
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-golang">
+          <a href="/node/golang" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-google"></i> <br />
+            
+            golang
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tensorflow">
+          <a href="/node/tensorflow" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-laptop"></i> <br />
+            
+            tensorflow
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-inspiration">
+          <a href="/node/inspiration" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-diamond"></i> <br />
+            
+            人生感悟
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/node/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://niaidaye.github.io/node/node/2017/08/25/Java开发———DAO设计模式及优化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林俊">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/node/icon/icon.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林俊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java开发———DAO设计模式及优化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-25T10:00:23+08:00">
+                2017-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>什么是DAO？</strong></p>
+<blockquote>
+<p>DAO是Data Access Object 数据访问接口，顾名思义：就是与数据库打交道。夹在业务逻辑与数据资源的中间。</p>
+</blockquote>
+<p><strong>DAO模式有哪些？</strong></p>
+<blockquote>
+<p>DAO模式实际上是两个模式的组合 既Data Accessor 模式和Active Domain Object模式。</p>
+</blockquote>
+<p><strong>它们的意义和作用</strong></p>
+<blockquote>
+<p>Data Accessor模式实现了数据访问和业务逻辑的分离，Active Domain Object 模式实现了业务数据的对象化封装。<br>以javaWeb中对数据库的为例：<br><strong>首先预先准备一个工具类DBUtils.class</strong></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">public class DBUtils &#123;</div><div class="line">	public final static String URL=&quot;jdbc:mysql://localhost:3306/mydb&quot;;</div><div class="line">	public final static String USERNAME=&quot;root&quot;;//用户名</div><div class="line">	public final static String  PASSWORD=&quot;*****&quot;;//密码</div><div class="line">	public final static String DRIVER=&quot;com.mysql.jdbc.Driver&quot;;</div><div class="line">	private DBUtils()&#123;</div><div class="line">	&#125;</div><div class="line">	//使用静态快加载驱动</div><div class="line">	static&#123;</div><div class="line">		try &#123;</div><div class="line">			Class.forName(DRIVER);</div><div class="line">		&#125; catch (ClassNotFoundException e) &#123;</div><div class="line">			// TODO Auto-generated catch block</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	//定义一个获取数据库连接的方法</div><div class="line">	public static Connection getconnection() &#123;</div><div class="line">		Connection connection=null;</div><div class="line">		try &#123;</div><div class="line">	    connection=DriverManager.getConnection(URL, USERNAME, PASSWORD);</div><div class="line">		&#125; catch (SQLException e) &#123;</div><div class="line">			// TODO Auto-generated catch block</div><div class="line">			e.printStackTrace();</div><div class="line">			System.out.println(&quot;获取连接失败&quot;);</div><div class="line">		&#125;</div><div class="line">		return connection;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	public static void close(ResultSet rs,Statement statement,Connection conn)&#123;</div><div class="line">	   	 if (rs!=null)</div><div class="line">				try &#123;</div><div class="line">					rs.close();</div><div class="line">				&#125; catch (SQLException e) &#123;</div><div class="line">					// TODO Auto-generated catch block</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;</div><div class="line">			if (statement!=null) &#123;</div><div class="line">				try &#123;</div><div class="line">					statement.close();</div><div class="line">				&#125; catch (SQLException e) &#123;</div><div class="line">					// TODO Auto-generated catch block</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;	</div><div class="line">			&#125;</div><div class="line">			if (conn!=null) &#123;</div><div class="line">				try &#123;</div><div class="line">					conn.close();</div><div class="line">				&#125; catch (SQLException e) &#123;</div><div class="line">					// TODO Auto-generated catch block</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			&#125;&#125;</div></pre></td></tr></table></figure>
+<p><strong>接下来我们要来实现Dao模式</strong>        </p>
+<p>一个典型的DAO模式有以下几个组件：一个接口，数据传递对象或者领域模型，<br>先建立一个类 person.class  数据模型类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">public class Person &#123;</div><div class="line">	private int id;</div><div class="line">	private String name;</div><div class="line">	private int age;</div><div class="line">	private String description;</div><div class="line">	public int getId() &#123;</div><div class="line">		return id;</div><div class="line">	&#125;</div><div class="line">	public void setId(int id) &#123;</div><div class="line">		this.id = id;</div><div class="line">	&#125;</div><div class="line">	public String getName() &#123;</div><div class="line">		return name;</div><div class="line">	&#125;</div><div class="line">	public void setName(String name) &#123;</div><div class="line">		this.name = name;</div><div class="line">	&#125;</div><div class="line">	public int getAge() &#123;</div><div class="line">		return age;</div><div class="line">	&#125;</div><div class="line">	public void setAge(int age) &#123;</div><div class="line">		this.age = age;</div><div class="line">	&#125;</div><div class="line">	public String getDescription() &#123;</div><div class="line">		return description;</div><div class="line">	&#125;</div><div class="line">	public void setDescription(String description) &#123;</div><div class="line">		this.description = description;</div><div class="line">	&#125;</div><div class="line">	public Person( String name, int age, String description) &#123;</div><div class="line">		super();</div><div class="line">		this.name = name;</div><div class="line">		this.age = age;</div><div class="line">		this.description = description;</div><div class="line">	&#125;</div><div class="line">	public Person() &#123;</div><div class="line">		super();</div><div class="line">		// TODO Auto-generated constructor stub</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public String toString() &#123;</div><div class="line">		return &quot;person [id=&quot; + id + &quot;, name=&quot; + name + &quot;, age=&quot; + age + &quot;, description=&quot; + description + &quot;]&quot;;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p><strong>声明一个接口，数据操作类  PersonDao.class</strong></p>
+<blockquote>
+<p><code>import java.sql.SQLException;
+import java.util.List;
+import com.vince.domain.Person;
+public interface PersonDao {
+    public void add(Person p) throws SQLException;//这里需要抛出异常；否则在下面操作的时候会报错！！！！
+    public void update(Person p) throws SQLException;
+    public void delete(int id) throws SQLException;
+    public Person findById(int id) throws SQLException;
+    public List&lt;Person&gt; findAll() throws SQLException;
+}</code></p>
+</blockquote>
+<p><strong>编写接口的实现类  PersonDanImpl.class</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div></pre></td><td class="code"><pre><div class="line">import java.sql.Connection;</div><div class="line">import java.sql.PreparedStatement;</div><div class="line">import java.sql.ResultSet;</div><div class="line">import java.sql.SQLException;</div><div class="line">import java.util.ArrayList;</div><div class="line">import java.util.List;</div><div class="line"></div><div class="line">import com.util.db.DBUtils;</div><div class="line">import com.util.db.JdbcTemplete;</div><div class="line">import com.vince.base.ResultSetHandler;</div><div class="line">import com.vince.dao.PersonDao;</div><div class="line">import com.vince.domain.Person;</div><div class="line"></div><div class="line">public class PersonDaoImpl implements PersonDao &#123;</div><div class="line">private JdbcTemplete jdbcTemolete;</div><div class="line">	public PersonDaoImpl() &#123;</div><div class="line">		jdbcTemolete=new JdbcTemplete();</div><div class="line">&#125;</div><div class="line">	@Override</div><div class="line">	public void add(Person p) throws SQLException &#123;</div><div class="line">		Connection connection=null;</div><div class="line">		PreparedStatement ps=null;</div><div class="line">		String sql=&quot;insert into person(name,age,description)values(?,?,?)&quot;;</div><div class="line">		try &#123;</div><div class="line">		connection=DBUtils.getconnection();</div><div class="line">		ps=connection.prepareStatement(sql);</div><div class="line">		ps.setString(1, p.getName());</div><div class="line">		ps.setInt(2, p.getAge());</div><div class="line">		ps.setString(3, p.getDescription());</div><div class="line">		ps.executeUpdate();</div><div class="line">	&#125; catch (SQLException e) &#123;</div><div class="line">		</div><div class="line">		throw new SQLException(&quot;数据库添加异常&quot;);</div><div class="line">	&#125;finally &#123;</div><div class="line">		DBUtils.close(null, ps, connection);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">		&#125;</div><div class="line">@Override</div><div class="line">	public void update(Person p) throws SQLException &#123;</div><div class="line">	Connection connection=null;</div><div class="line">		PreparedStatement ps=null;</div><div class="line">		String sql=&quot;update person set name=?,age=?,description=? where id=?&quot;;</div><div class="line">		try &#123;</div><div class="line">		connection=DBUtils.getconnection();</div><div class="line">		ps=connection.prepareStatement(sql);</div><div class="line">		ps.setString(1, p.getName());</div><div class="line">		ps.setInt(2, p.getAge());</div><div class="line">		ps.setString(3, p.getDescription());</div><div class="line">		ps.setInt(4, p.getId());</div><div class="line">		ps.executeUpdate();	</div><div class="line">	&#125; catch (SQLException e) &#123;</div><div class="line">			throw new SQLException(&quot;数据库更新异常&quot;);</div><div class="line">	&#125;finally &#123;</div><div class="line">		DBUtils.close(null, ps, connection);</div><div class="line">	&#125;	</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void delete(int id) throws SQLException &#123;</div><div class="line">		Connection connection=null;</div><div class="line">		PreparedStatement ps=null;</div><div class="line">		String sql=&quot;delete from person where id=?&quot;;</div><div class="line">		try &#123;</div><div class="line">		connection=DBUtils.getconnection();</div><div class="line">		ps.setInt(1,id);</div><div class="line">		ps.executeUpdate();</div><div class="line">		</div><div class="line">	&#125; catch (SQLException e) &#123;</div><div class="line">		e.printStackTrace();</div><div class="line">		throw new SQLException(&quot;数据库删除异常&quot;);</div><div class="line">	&#125;finally &#123;</div><div class="line">		DBUtils.close(null, ps, connection);</div><div class="line">	&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">	public List&lt;Person&gt; findAll() throws SQLException &#123;</div><div class="line">		 Connection connection=null;</div><div class="line">		   PreparedStatement ps=null;</div><div class="line">		   ResultSet rs=null;</div><div class="line">		   Person p=null;</div><div class="line">		   List&lt;Person&gt; persons=new ArrayList&lt;Person&gt;();</div><div class="line">			String sql=&quot;selectid,name,age,description from person&quot;;</div><div class="line">			try &#123;</div><div class="line">				connection=DBUtils.getconnection();</div><div class="line">				ps=connection.prepareStatement(sql);</div><div class="line">				rs=ps.executeQuery();</div><div class="line">				while(rs.next())&#123;</div><div class="line">					p=new Person();</div><div class="line">					p.setId(rs.getInt(1));</div><div class="line">					p.setName(rs.getString(2));</div><div class="line">					p.setAge(rs.getInt(3));</div><div class="line">					p.setDescription(rs.getString(4));</div><div class="line">					persons.add(p);</div><div class="line">					&#125;</div><div class="line">				&#125; catch (SQLException e) &#123;</div><div class="line">				// TODO: handle exception</div><div class="line">				throw new SQLException(&quot;查询所有数据异常&quot;);</div><div class="line">			&#125;finally &#123;</div><div class="line">				DBUtils.close(rs, ps, connection);</div><div class="line">			&#125;</div><div class="line">			return persons;	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>上面就是DAO模式的实现过程。这种DAO设计模式主要是可以让我们写的代码，更加简洁，冗余小，实现了软件设计设计模式中的一条规则：高内聚，低耦合；下面呢？我们来思考能不能继续优化DAO设计模式的实现，</strong></p>
+<blockquote>
+<p>新建一个类，JdbcTemplete .class  来再做个一个提炼 抽象；<br><code>import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import com.vince.base.ResultSetHandler;
+public class JdbcTemplete {
+    public int update(String sql,Object ...args){
+    Connection connection=null;
+    PreparedStatement ps=null;
+    try {
+        connection=DBUtils.getconnection();
+        ps=connection.prepareStatement(sql);
+        if (args!=null) {
+            for(int i=0;i&lt;args.length;i++){
+                ps.setObject(i+1, args[i]);
+            }
+        }
+        return ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return 0;
+    }finally {
+        DBUtils.close(null, ps, connection);
+    }
+    }
+    public Object query(String sql,ResultSetHandler handler,Object...args){
+        Connection connection=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            connection=DBUtils.getconnection();
+            connection.prepareStatement(sql);
+            if (args!=null) {
+                for(int i=0;i&lt;args.length;i++){
+                    ps.setObject(i+1, args[i]);
+                }
+            }
+            rs=ps.executeQuery();
+                return    handler.doHandler(rs);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+}</code><br>所有类的父类是Objects  有多个参数， 所有我们使用Object …args；<br>接下来在PersonDaoImpl.class类中，我们就可以使用我们提取处在的抽象类了 嘻嘻~ 是不是代码简单多了~~ 向对于数据库的增删 更新的操作都可以使用类似的方法，</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">	public void add(Person p) throws SQLException &#123;</div><div class="line">		String sql=&quot;insert into person(name,age,description)values(?,?,?)&quot;;</div><div class="line">		jdbcTemolete.update(sql, p.getName(),p.getDescription());	</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p> 对于一个需要从数据库查询的操作，在查询的操作，需要用道 ResultSet这个方法的<br>  我们这里定义一个接口ResultSetHandler.class；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">import java.sql.ResultSet;</div><div class="line">import java.sql.SQLException;</div><div class="line"></div><div class="line">public interface ResultSetHandler &#123;</div><div class="line">	public Object doHandler(ResultSet rs)throws SQLException;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>在JdbcTemplete.class中的query这个方法中 就需要用的这个接口<br>在PersonDaoImpl.class中这个查询方法，我们就可以这样写了</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">	public Person findById(final int id) throws SQLException &#123;</div><div class="line">	  </div><div class="line">		String sql=&quot;select name,age,description from person where id=?&quot;;</div><div class="line">	  return  (Person) jdbcTemolete.query(sql, new ResultSetHandler() &#123;</div><div class="line">		</div><div class="line">		@Override</div><div class="line">		public Object doHandler(ResultSet rs)throws SQLException &#123;</div><div class="line">			 Person p=null;</div><div class="line">				if(rs.next())&#123;</div><div class="line">					p=new Person();</div><div class="line">					p.setId(id);</div><div class="line">					p.setName(rs.getString(1));</div><div class="line">					p.setAge(rs.getInt(2));</div><div class="line">	 				p.setDescription(rs.getString(3));			                          &#125;</div><div class="line">			return p;</div><div class="line">		&#125;</div><div class="line">	&#125;,id);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>最后 就是弄一个main 方法 来使用我们定义好 对数据操作的方法喽</p>
+<p><strong>有什么错误需要改正欢迎指出，共同学习</strong><br>     <strong>有什么错误需要改正欢迎指出，共同学习</strong></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/node/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/node/2017/08/25/关于机器学习在线预测的任务学习笔记/" rel="next" title="关于机器学习在线预测的任务学习笔记">
+                <i class="fa fa-chevron-left"></i> 关于机器学习在线预测的任务学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/node/2017/08/25/MySQL的初步使用———基本的SQL语句的使用/" rel="prev" title="MySQL的初步使用———基本的SQL语句的使用">
+                MySQL的初步使用———基本的SQL语句的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/node/icon/icon.png"
+               alt="林俊" />
+          <p class="site-author-name" itemprop="name">林俊</p>
+           
+              <p class="site-description motion-element" itemprop="description">程序员之所以犯错误，不是因为他们不懂，而是因为他们自以为什么都懂!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/node/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/linjunjj" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/linjunjj" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  CSDN
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林俊</span>
+</div>
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+  
+  <script type="text/javascript" src="/node/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/node/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/node/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/node/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/node/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/node/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/node/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/node/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+</html>

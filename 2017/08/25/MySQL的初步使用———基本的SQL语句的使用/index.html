@@ -1,0 +1,803 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="">
+<head>
+
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+</style>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/node/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/node/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/node/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mysql," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/node/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="基本的Sql语句的，分为3种，DDL，Data Definition Language 数据库定义语言） ，DML，（Data Manipulation Language 数据操纵语言），DCL，（Data Control Language 数据库控制语言）。 数据定义语言DDL       CRTATE database mydb(你的数据库名字);   —在数据的使用中，关键字是不区分大">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL的初步使用———基本的SQL语句的使用">
+<meta property="og:url" content="https://niaidaye.github.io/node/2017/08/25/MySQL的初步使用———基本的SQL语句的使用/index.html">
+<meta property="og:site_name" content="林俊的博客">
+<meta property="og:description" content="基本的Sql语句的，分为3种，DDL，Data Definition Language 数据库定义语言） ，DML，（Data Manipulation Language 数据操纵语言），DCL，（Data Control Language 数据库控制语言）。 数据定义语言DDL       CRTATE database mydb(你的数据库名字);   —在数据的使用中，关键字是不区分大">
+<meta property="og:image" content="http://img.blog.csdn.net/20170131100918500?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170131101157410?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170131101740339?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170131101853981?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-08-31T04:27:26.575Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL的初步使用———基本的SQL语句的使用">
+<meta name="twitter:description" content="基本的Sql语句的，分为3种，DDL，Data Definition Language 数据库定义语言） ，DML，（Data Manipulation Language 数据操纵语言），DCL，（Data Control Language 数据库控制语言）。 数据定义语言DDL       CRTATE database mydb(你的数据库名字);   —在数据的使用中，关键字是不区分大">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170131100918500?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/node/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://niaidaye.github.io/node/2017/08/25/MySQL的初步使用———基本的SQL语句的使用/"/>
+
+
+
+
+
+  <title> MySQL的初步使用———基本的SQL语句的使用 | 林俊的博客 </title>
+  
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband">
+    <a href="https://github.com/you"><img style="position: absolute;
+     top: 0; left: 0; border: 0;"
+     src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67"
+     alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
+    </div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/node/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林俊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一次偶然的成功，比一次必然的失败更可怕</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/node/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-timeline">
+          <a href="/node/timeline" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            时间轴
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-java">
+          <a href="/node/java" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-coffee"></i> <br />
+            
+            java
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-javaweb">
+          <a href="/node/javaweb" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-users"></i> <br />
+            
+            javaweb
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-android">
+          <a href="/node/android" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-android"></i> <br />
+            
+            android
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-golang">
+          <a href="/node/golang" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-google"></i> <br />
+            
+            golang
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tensorflow">
+          <a href="/node/tensorflow" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-laptop"></i> <br />
+            
+            tensorflow
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-inspiration">
+          <a href="/node/inspiration" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-diamond"></i> <br />
+            
+            人生感悟
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/node/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://niaidaye.github.io/node/node/2017/08/25/MySQL的初步使用———基本的SQL语句的使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林俊">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/node/icon/icon.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林俊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MySQL的初步使用———基本的SQL语句的使用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-25T10:01:53+08:00">
+                2017-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>   基本的Sql语句的，分为3种，<strong>DDL</strong>，Data Definition Language 数据库定义语言） ，DML，（Data Manipulation Language 数据操纵语言），DCL，（Data Control Language 数据库控制语言）。</p>
+<p>数据定义语言DDL<br>       CRTATE database mydb(你的数据库名字);   —在数据的使用中，关键字是不区分大小写的，这一点跟Java恰好相反，为了统一，关键字我们用大写，<br>       <img src="http://img.blog.csdn.net/20170131100918500?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="创建数据库"><br>       创建好之后，我们使用 show databases; (加S 复数)<br>       <img src="http://img.blog.csdn.net/20170131101157410?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里就可以看到我们刚才创建的数据库了"><br>       修改使用 ALTER  删除用 DROP； 这里就不一一说明了，和创建数据库差不多的结构，<br>       创建好数据库之后，就要创建表了，<br>         <img src="http://img.blog.csdn.net/20170131101740339?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>         有这几个数据库， 使用USE mydb1;<br>          <img src="http://img.blog.csdn.net/20170131101853981?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluanVuamo=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="使用mydb1数据库"><br>          创建表    CREATE table people（表名字）{ id  int primary key auto_increment  createDate};<br>          primary key 主键    auto_increment 自增<br>       查看表<br>       desc peopel(表名);</p>
+<pre><code>  **数据操纵语言DML**   语句insert update delete
+    添加数据 insert into people( id ,now()) values(1));
+修改表名 alter table peopel rename test
+删除表列 alter table people drop column name;
+修改表类型：  alter table people modify address char(40);
+// alter table people change address char(40);
+修改表列名：alter table people column address address1 varchar(30);
+
+     添加一列update peopel set id=1,creatDate=&quot;2017_5_6&quot; where id=0;
+
+      **数据查询语言DRL**    select语句
+      select * from people （查询当前的数据的所有数据）       *代表所有
+      在实际开发中 应该避免使用* 因为*是通配符，编译需要时间
+      select id，createDate from peopel; 与上面查询语句是一样的，
+ select * 3from peopel where id=1;(where  id =1 索引)
+   select * from people where createDate is null(索引为空)
+   select * from people where createDate is not null(索引不为空)      
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/node/tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/node/2017/08/25/Java开发———DAO设计模式及优化/" rel="next" title="Java开发———DAO设计模式及优化">
+                <i class="fa fa-chevron-left"></i> Java开发———DAO设计模式及优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/node/2017/08/29/暑假两个月实习心得/" rel="prev" title="暑假两个月实习心得">
+                暑假两个月实习心得 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/node/icon/icon.png"
+               alt="林俊" />
+          <p class="site-author-name" itemprop="name">林俊</p>
+           
+              <p class="site-description motion-element" itemprop="description">程序员之所以犯错误，不是因为他们不懂，而是因为他们自以为什么都懂!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/node/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/linjunjj" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/linjunjj" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  CSDN
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林俊</span>
+</div>
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+  
+  <script type="text/javascript" src="/node/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/node/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/node/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/node/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/node/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/node/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/node/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/node/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/node/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+</html>
